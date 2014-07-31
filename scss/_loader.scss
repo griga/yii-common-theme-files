@@ -20,7 +20,7 @@
 		left: 50%;
 		margin-left: -30px;
 		top: 50%;
-		z-index: -1;
+		
 		@include transform(translateY(-50%));
 		@include transition(opacity .2s ease-in-out);
 		@include opacity(0);
