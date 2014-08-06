@@ -217,7 +217,7 @@ angular.module('commerce.common', [])
 	.directive('commerceActiveLinkState', function ($rootScope) {
 		return {
 			restrict: 'C',
-			controller: function ($scope, $element) {
+			link: function () {
 				if (!$rootScope.commerceActiveLinkStateBinded) {
 					$rootScope.$on("$locationChangeStart", function (event, newLocation) {
 						angular.forEach(document.querySelectorAll('.commerce-active-link-state'), function (link) {
@@ -228,7 +228,6 @@ angular.module('commerce.common', [])
 								element.addClass('active');
 							}
 						});
-
 					});
 					$rootScope.commerceActiveLinkStateBinded = true;
 				}
@@ -259,13 +258,13 @@ angular.module('commerce.common', [])
 				var width = Math.min(element.parent()[0].clientWidth, scope.maxWidth)
 				var height = ~~( scope.maxHeight / scope.maxWidth * width);
 				element.parent().css({
-					width: width,
-					margin: 'auto',
-					height: height + 18
+					width: width + 'px',
+					height: (height + 18)  + 'px',
+					margin: 'auto'
 				});
 				element.css({
-					width: width,
-					height: height
+					width: width + 'px',
+					height: height + 'px'
 				});
 				scope.loading = true;
 				scope.slides = [];
