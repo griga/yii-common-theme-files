@@ -156,10 +156,11 @@ angular.module('commerce.common', [])
 			require: 'ngModel',
 			link: function (scope, inputElement, attributes, modelCtrl) {
 				var spinnerWrap = angular.element('<div />').addClass('cmr-spinner-wrap');
-				var spinUp = angular.element('<div />').addClass('cmr-spinner-up').appendTo(spinnerWrap);
-				var spinDown = angular.element('<div />').addClass('cmr-spinner-down').appendTo(spinnerWrap);
-				spinnerWrap.insertBefore(inputElement);
-				inputElement.appendTo(spinnerWrap);
+				var spinUp = angular.element('<div />').addClass('cmr-spinner-up');
+				var spinDown = angular.element('<div />').addClass('cmr-spinner-down');
+				spinnerWrap.append(spinUp).append(spinDown);
+				inputElement.after(spinnerWrap);
+				spinnerWrap.append(inputElement);
 
 				spinUp.on('click', function () {
 					updateInput((parseInt(inputElement.val()) + 1));
