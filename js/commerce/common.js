@@ -296,19 +296,32 @@ angular.module('commerce.common', [])
 				loop();
 			}
 		}
-	}).animation('.view-scroll-animation', function () {
+	}).animation('.view-scroll-animation', function ($interval, $window) {
 		return {
-			enter: function (element, done) {
-				var scrollAnimation = function () {
+			enter: function (element) {
+				var scrollAnimationFire = function () {
 					if (element.hasClass('ng-enter')) {
-						setTimeout(scrollAnimation, 50)
+						setTimeout(scrollAnimationFire, 50)
 					} else {
-//						angular.element(document.querySelectorAll('html, body'))
-//							.animate({scrollTop: document.querySelector(".view-scroll-animation")
-//								.getBoundingClientRect().top- 147}, 300);
+						var scrollTopOffset = parseInt(element.attr('data-scroll-top-offset')) || 0,
+							elementYOffset = element[0].getBoundingClientRect().top - scrollTopOffset,
+							windowY = ~~$window.scrollY,
+							diff = Math.abs(windowY + elementYOffset),
+							step = ~~elementYOffset / 20,
+							scrollDown = elementYOffset>windowY,
+							timer;
+						timer = $interval(function() {
+							windowY = ~~(windowY+step);
+							if((!scrollDown && (windowY-diff)<=0) || (scrollDown&&(windowY-diff)>=0)){
+								$window.scroll(0, diff);
+								$interval.cancel(timer);
+							} else {
+								$window.scroll(0, windowY);
+							}
+						}, 10);
 					}
 				};
-				scrollAnimation();
+				scrollAnimationFire();
 			}
 		};
 	});
