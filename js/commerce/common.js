@@ -237,7 +237,6 @@ angular.module('commerce.common', [])
 
 				var width = Math.min(element.parent()[0].clientWidth, scope.maxWidth)
 				var height = ~~( scope.maxHeight / scope.maxWidth * width);
-				console.log(width, height, scope.maxHeight/ scope.maxWidth * width);
 				element.parent().css({
 					width: width,
 					margin: 'auto',
