@@ -1,0 +1,64 @@
+@mixin commerce-slider($nav-color: #666) {
+	.commerce-slider {
+		position: relative;
+		background: #ffffff;
+
+		.slider-item {
+			position: absolute;
+			opacity: 0;
+			z-index: 1;
+			@include transition(opacity .4s ease-in);
+			&.active {
+				opacity: 1;
+				z-index: 2;
+			}
+			.slide-bg {
+				img {
+					@include img-responsive;
+				}
+			}
+			.slide-content {
+				font-family: $font-family-base;
+				text-shadow: 0 0 5px rgba(white, .9);
+				position: absolute;
+				right: 0px;
+				left: 0px;
+				bottom: 0px;
+
+				padding: 10px 15px;
+				background: rgba(white, .8);
+				h4 {
+					margin-top: 0;
+				}
+				p {
+					margin-bottom: 0;
+				}
+			}
+		}
+		.slider-nav {
+			position: absolute;
+			bottom: -14px;
+			left: 14px;
+			list-style: none;
+			margin: 0;
+			padding: 0;
+			li {
+				float: left;
+				height: 6px;
+				width: 6px;
+				margin-right: 7px;
+				background: #ffffff;
+				border: 1px solid $nav-color;
+				border-radius: 50%;
+				@include transition(all .2s ease-out);
+				&.active {
+					background: $nav-color;
+				}
+				&:hover {
+					cursor: pointer;
+					@include scale(1.4, 1.4);
+				}
+			}
+		}
+	}
+}
