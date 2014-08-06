@@ -53,10 +53,10 @@ angular.module('commerce.common', [])
 			createUrl: function (url) {
 				return '/' + this.getCurrentLanguage() + '/' + url
 			},
-			query: function(url, data){
+			query: function (url, data) {
 				data = data || {};
 				var dfd = $q.defer();
-				$http.get(this.createUrl(url), data).then(function(response){
+				$http.get(this.createUrl(url), data).then(function (response) {
 					dfd.resolve(response.data);
 				});
 				return dfd.promise;
@@ -73,7 +73,7 @@ angular.module('commerce.common', [])
 			}
 		}
 	})
-	.directive('commerceOverlay', function(){
+	.directive('commerceOverlay', function () {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -83,16 +83,16 @@ angular.module('commerce.common', [])
 			}
 		}
 	})
-	.directive('commerceError', function(){
+	.directive('commerceError', function () {
 		return {
 			restrict: 'E',
 			replace: true,
 			template: '<div class="label label-danger" ng-show="value">{{error}}</div>',
-			scope:{
+			scope: {
 				value: '='
 			},
-			link:function(scope){
-				scope.$watch('value', function(){
+			link: function (scope) {
+				scope.$watch('value', function () {
 					scope.error = angular.isArray(scope.value) ? scope.value.join(',') : scope.value;
 				})
 
@@ -169,15 +169,15 @@ angular.module('commerce.common', [])
 						updateInput((parseInt(inputElement.val()) - 1));
 					}
 				});
-				var updateInput = function(value){
-					modelCtrl.$setViewValue( value);
+				var updateInput = function (value) {
+					modelCtrl.$setViewValue(value);
 					modelCtrl.$render();
 					scope.$apply();
 				}
 			}
 		}
 	})
-	.directive('cmrThumb', function(){
+	.directive('cmrThumb', function () {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -187,25 +187,25 @@ angular.module('commerce.common', [])
 				source: '='
 			},
 			template: '<img ng-src="{{thumbSource}}">',
-			link: function(scope){
-				scope.$watch('source', function(source){
-					if(source){
+			link: function (scope) {
+				scope.$watch('source', function (source) {
+					if (source) {
 						var matches = source.match(/([\w\d.\/]*\/)([\w\d]+)(.+)/);
-						scope.thumbSource = matches[1]+'.tmb/'+matches[2]+'_'+scope.width+'x'+scope.height + matches[3];
+						scope.thumbSource = matches[1] + '.tmb/' + matches[2] + '_' + scope.width + 'x' + scope.height + matches[3];
 					}
 				})
 			}
 
 		}
 	})
-	.directive('commerceSearch', function($location, $rootScope){
+	.directive('commerceSearch', function ($location, $rootScope) {
 		return {
 			restrict: 'A',
-			link: function(scope, element){
-				element.on('keydown',function(event){
-					if(event.which === 13) {
-						$rootScope.$apply(function() {
-							$location.path('/search/'+ element.val());
+			link: function (scope, element) {
+				element.on('keydown', function (event) {
+					if (event.which === 13) {
+						$rootScope.$apply(function () {
+							$location.path('/search/' + element.val());
 						});
 						event.preventDefault();
 					}
@@ -214,7 +214,28 @@ angular.module('commerce.common', [])
 			}
 		}
 	})
-	.directive('commerceSlider', function ($http, $sce, commerceImagePreloader, commerceUtils, $interval) {
+	.directive('commerceActiveLinkState', function ($rootScope) {
+		return {
+			restrict: 'C',
+			controller: function ($scope, $element) {
+				if (!$rootScope.commerceActiveLinkStateBinded) {
+					$rootScope.$on("$locationChangeStart", function (event, newLocation) {
+						angular.forEach(document.querySelectorAll('.commerce-active-link-state'), function (link) {
+							var element = angular.element(link),
+								linkUrl = location.protocol + '//' + location.host + element.attr('href');
+							element.removeClass('active');
+							if (linkUrl == newLocation){
+								element.addClass('active');
+							}
+						});
+
+					});
+					$rootScope.commerceActiveLinkStateBinded = true;
+				}
+			}
+		}
+	})
+	.directive('commerceSlider',function ($http, $sce, commerceImagePreloader, commerceUtils, $interval) {
 		return {
 			restrict: 'E',
 			template: '<div class="commerce-slider">' +
@@ -249,26 +270,26 @@ angular.module('commerce.common', [])
 				scope.loading = true;
 				scope.slides = [];
 				scope.currentIndex = undefined;
-				$http.get( commerceUtils.createUrl('api/slide') ).then(function(response){
+				$http.get(commerceUtils.createUrl('api/slide')).then(function (response) {
 					scope.slides = response.data;
 					var imageUrls = [];
-					angular.forEach(scope.slides, function(slide){
+					angular.forEach(scope.slides, function (slide) {
 						imageUrls.push(slide.image);
 						slide.content = $sce.trustAsHtml(slide.content);
 						slide.preloaded = false;
 					});
-					commerceImagePreloader.load(imageUrls).then(function(){
+					commerceImagePreloader.load(imageUrls).then(function () {
 						scope.loading = false;
 						scope.currentIndex = 0;
 					})
 				});
 
-				var loop = function(){
+				var loop = function () {
 					_interval = $interval(function () {
 						scope.currentIndex = (scope.currentIndex == scope.slides.length - 1 ? 0 : scope.currentIndex + 1);
 					}, 8000);
 				};
-				scope.slideTo = function(index){
+				scope.slideTo = function (index) {
 					$interval.cancel(_interval)
 					scope.currentIndex = index;
 					loop();
@@ -276,14 +297,16 @@ angular.module('commerce.common', [])
 				loop();
 			}
 		}
-	}).animation('.view-scroll-animation', function() {
+	}).animation('.view-scroll-animation', function () {
 		return {
-			enter : function(element, done) {
-				var scrollAnimation = function(){
-					if(element.hasClass('ng-enter')){
+			enter: function (element, done) {
+				var scrollAnimation = function () {
+					if (element.hasClass('ng-enter')) {
 						setTimeout(scrollAnimation, 50)
 					} else {
-						$('html, body').animate({scrollTop: $(".view-scroll-animation").offset().top - 147}, 300);
+//						angular.element(document.querySelectorAll('html, body'))
+//							.animate({scrollTop: document.querySelector(".view-scroll-animation")
+//								.getBoundingClientRect().top- 147}, 300);
 					}
 				};
 				scrollAnimation();
