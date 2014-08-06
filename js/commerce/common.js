@@ -123,7 +123,8 @@ angular.module('commerce.common', [])
 				});
 			}
 		}
-	}).directive('commerceTooltip', function ($timeout) {
+	})
+	.directive('commerceTooltip', function ($timeout) {
 		return {
 			restrict: 'A',
 			link: function (scope, element, attributes) {
@@ -148,7 +149,8 @@ angular.module('commerce.common', [])
 
 			}
 		}
-	}).directive('commerceSpinner', function () {
+	})
+	.directive('commerceSpinner', function () {
 		return {
 			restrict: 'A',
 			require: 'ngModel',
@@ -174,7 +176,8 @@ angular.module('commerce.common', [])
 				}
 			}
 		}
-	}).directive('cmrThumb', function(){
+	})
+	.directive('cmrThumb', function(){
 		return {
 			restrict: 'E',
 			replace: true,
@@ -194,7 +197,8 @@ angular.module('commerce.common', [])
 			}
 
 		}
-	}).directive('commerceSearch', function($location, $rootScope){
+	})
+	.directive('commerceSearch', function($location, $rootScope){
 		return {
 			restrict: 'A',
 			link: function(scope, element){
@@ -207,6 +211,70 @@ angular.module('commerce.common', [])
 					}
 
 				});
+			}
+		}
+	})
+	.directive('commerceSlider', function ($http, $sce, commerceImagePreloader, commerceUtils, $interval) {
+		return {
+			restrict: 'E',
+			template: '<div class="commerce-slider">' +
+				'<commerce-loader loading="loading"></commerce-loader>' +
+				'<div class="slider-item" ng-repeat="slide in slides" ng-class="{active: $index==currentIndex}">' +
+				'<div class="slide-bg"><img ng-src="{{slide.image}}"></div>' +
+				'<div ng-if="slide.content" class="slide-content" ng-bind-html="slide.content"></div>' +
+				'</div>' +
+				'<ul class="slider-nav">' +
+				'<li ng-repeat="slide in slides" ng-click="slideTo($index)" ng-class="{active: $index==currentIndex}">&nbsp;</li>' +
+				'</ul>' +
+				'</div>',
+			replace: true,
+			scope: {
+				maxWidth: '@',
+				maxHeight: '@'
+			},
+			link: function (scope, element) {
+				var _interval;
+
+				var width = Math.min(element.parent()[0].clientWidth, scope.maxWidth)
+				var height = ~~( scope.maxHeight / scope.maxWidth * width);
+				console.log(width, height, scope.maxHeight/ scope.maxWidth * width);
+				element.parent().css({
+					width: width,
+					margin: 'auto',
+					height: height + 18
+				});
+				element.css({
+					width: width,
+					height: height
+				});
+				scope.loading = true;
+				scope.slides = [];
+				scope.currentIndex = undefined;
+				$http.get( commerceUtils.createUrl('api/slide') ).then(function(response){
+					scope.slides = response.data;
+					var imageUrls = [];
+					angular.forEach(scope.slides, function(slide){
+						imageUrls.push(slide.image);
+						slide.content = $sce.trustAsHtml(slide.content);
+						slide.preloaded = false;
+					});
+					commerceImagePreloader.load(imageUrls).then(function(){
+						scope.loading = false;
+						scope.currentIndex = 0;
+					})
+				});
+
+				var loop = function(){
+					_interval = $interval(function () {
+						scope.currentIndex = (scope.currentIndex == scope.slides.length - 1 ? 0 : scope.currentIndex + 1);
+					}, 8000);
+				};
+				scope.slideTo = function(index){
+					$interval.cancel(_interval)
+					scope.currentIndex = index;
+					loop();
+				};
+				loop();
 			}
 		}
 	}).animation('.view-scroll-animation', function() {
