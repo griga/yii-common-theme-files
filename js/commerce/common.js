@@ -312,8 +312,8 @@ angular.module('commerce.common', [])
 							scrollDown = elementYOffset>windowY,
 							timer;
 						timer = $interval(function() {
-							windowY = ~~(windowY+step);
-							if((!scrollDown && (windowY-diff)<=0) || (scrollDown&&(windowY-diff)>=0)){
+							windowY = (windowY+step);
+							if((!scrollDown && (windowY-diff)<=0) || (scrollDown&& (windowY-diff)>=0)){
 								$window.scroll(0, diff);
 								$interval.cancel(timer);
 							} else {
