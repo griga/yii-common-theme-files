@@ -297,7 +297,8 @@ angular.module('commerce.common', [])
 				loop();
 			}
 		}
-	}).animation('.view-scroll-animation', function ($interval, $window) {
+	})
+	.animation('.view-scroll-animation', function ($interval, $window) {
 		return {
 			enter: function (element) {
 				var scrollAnimationFire = function () {
